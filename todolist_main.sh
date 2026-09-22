@@ -99,7 +99,7 @@ declare -A window=(
 windowOrder=("Mode" "Size" "Position") 
 
 # FUNCTIONS #
-source ~/Desktop/Git/cli-todolist/todolist_dev_functions.sh
+source ~/git/cli-todolist/todolist_dev_functions.sh
 
 ######################################################
 
