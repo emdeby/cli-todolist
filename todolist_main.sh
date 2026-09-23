@@ -53,54 +53,89 @@ declare -A cursor=(
     ["options"]=0
     ["keybindings"]=0
     ["visuals"]=0
-    ["window"]=0
     ["trashcan"]=0
 )
 
-optionsList=("Keybindings" "Visuals" "Windowoptions")
-
-declare -A keybindings=( 
-    ["Move up"]="ARROW UP0" 
-    ["Move down"]="ARROW DOWN1" 
-    ["New task"]="T2" 
-    ["Change status"]="SPACE3" 
-    ["Confirm"]="ENTER4" 
-    ["Back/Cancel"]="ESCAPE5" 
-    ["Remove"]="BACKSPACE6" 
-    ["Stall"]="Q7"
-    ["Duplicate"]="V8"
-    ["Rename/Recover"]="R9"
-    )
-keybindingsOrder=("Move up" "Move down" "New task" "Change status" "Confirm" "Back/Cancel" "Remove" "Stall" "Duplicate" "Rename/Recover")
+optionsList=("Visuals" "Keybindings")
 
 declare -A visuals=(
     ["Theme"]=""$theme_setting"0"
     ["Text color"]="White1"
-    ["Background color"]=""$(cat $background_colorcode)"2"
-    ["Highlight color"]="White3"
-    ["Date"]=""$date_setting"4"
-    ["Title"]=""$title_setting"5"
-    ["Lines"]=""$lines_setting"6"
-    ["Line color"]="White7"
+    ["Highlight color"]="White2"
+    ["Date"]=""$date_setting"3"
+    ["Title"]=""$title_setting"4"
+    ["Lines"]=""$lines_setting"5"
+    ["Line color"]="White6"
 )
-visualsOrder=("Theme" "Text color" "Background color" "Highlight color" "Date" "Title" "Lines" "Line color")
+visualsOrder=("Theme" "Text color" "Highlight color" "Date" "Title" "Lines" "Line color")
 
-declare -A window=(
-    ["Mode"]="Flexible0"
-    ["Size"]="$(cat $window_size_SAFE)1"
-    ["Position"]="Center2"
-)
-windowOrder=("Mode" "Size" "Position") 
+declare -A keybindings=( 
+    ["Move up"]="W / ARROW UP0" 
+    ["Move down"]="S / ARROW DOWN1" 
+    ["New task"]="T2" 
+    ["Change status/Confirm"]="SPACE / ENTER3" 
+    ["Back/Cancel"]="ESCAPE4" 
+    ["Remove"]="BACKSPACE5" 
+    ["Trashcan"]="D6"
+    ["Stall"]="Q7"
+    ["Duplicate"]="V8"
+    ["Rename/Recover"]="R9"
+    )
+keybindingsOrder=("Move up" "Move down" "New task" "Change status/Confirm" "Back/Cancel" "Remove" "Trashcan" "Stall" "Duplicate" "Rename/Recover")
+
+### PRE-EXECUTION CHECKS ###
+DEPENDENCIES=("figlet" "dialog")
+DISTRO=$(cat /etc/os-release | grep ^NAME | sed 's/NAME="//; s/"$//')
+if [[ "$DISTRO" == "Arch Linux" ]]
+then
+    if ! pacman -Q figlet
+    then
+        clear
+        echo "Dependency 'figlet' missing."
+        read -s -n 1  -p "Need to install dependency figlet, press enter to continue..."
+        echo
+        sudo pacman -S figlet
+    fi
+
+    if ! pacman -Q dialog
+    then
+        clear
+        echo "Dependency 'dialog' missing."
+        read -s -n 1  -p "Need to install dependency dialog, press enter to continue..."
+        echo
+        sudo pacman -S dialog 
+    fi
+
+elif [[ "$DISTRO" == "Debian" || "$DISTRO" == "Ubuntu" ]]
+then
+    if ! apt list --installed figlet
+    then
+        clear
+        echo "Dependency 'figlet' missing."
+        read -s -n 1 -p "Need to install dependency figlet, press enter to continue..."
+        echo
+        sudo apt install figlet
+    fi
+
+    if ! apt list --installed dialog
+    then
+        clear
+        echo "Dependency 'dialog' missing."
+        read -s -n 1  -p "Need to install dependency dialog, press enter to continue..."
+        echo
+        sudo apt install dialog
+    fi
+fi
+
+############################
 
 # FUNCTIONS #
-source ~/git/cli-todolist/todolist_dev_functions.sh
+source ~/git/cli-todolist/todolist_functions.sh
 
 ######################################################
 
 ### MAIN ###
 trap 'handleResize' SIGWINCH
-
-log "STARTED" >> $log_file
 
 
 while true;
