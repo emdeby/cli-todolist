@@ -35,6 +35,37 @@ reorderList() {
     fi
 }
 
+check_dependency() {
+    local DEPENDENCY="$1"
+
+    if [[ "$DISTRO" == "Arch Linux" ]]
+    then
+        local CHECK="pacman -Q"
+        local INSTALL="pacman -S"
+    elif [[ "$DISTRO" == "Debian" || "$DISTRO" == "Ubuntu" ]]
+    then
+        local CHECK="apt list --installed"
+        local INSTALL="apt install"
+    fi
+
+    if ! $CHECK $DEPENDENCY
+    then
+        clear
+        echo "Dependency '$DEPENDENCY' missing."
+        read -s -n 1  -p "Need to install dependency '$DEPENDENCY', press enter to continue..."
+        echo
+        if sudo $INSTALL $DEPENDENCY
+        then
+            sleep 1
+            clear
+            echo "Dependency '$DEPENDENCY' installed successfully!"
+            sleep 2
+            clear
+            sleep 0.5
+        fi
+    fi
+}
+
 calcSpaces(){
     twidth=$(tput cols)
     line="$1"
@@ -456,12 +487,6 @@ printOptions() {
     fi
 }
 
-printListNEW() {
-    ## this function should combine the printList and printTrashcan function 
-    ## because they are nearly the same
-    :
-}
-
 printList() {
     local printGapPrio=1
     local printGapStall=1
@@ -684,34 +709,7 @@ move_down() {
     echo "$cursor"
 }
 
-move_right() {
-    # for navigations through multiple pages of tasks
-}
-
-move_left() {
-    # for navigations through multiple pages of tasks 
-}
-
 log() {
     local text="$1"
     echo "[$(date +%D-%T)] $text" >> $log_file
-}
-
-#####
-# one-task-one-file
-
-printTasks() {
-    numbering=1
-    for file in "$tasksDir"*
-    do
-        printf '%s\n' " $numbering. $(sed -n '/^#+$/,/^#-$/ { /^#+$/d; /^#-$/d;p }' "$file")"
-        ((numbering++))
-    done
-}
-
-printDescription() {
-    local file=$1
-    
-    sed -n '/^%+$/,/^%-$/ { /^%+$/d; /^%-$/d; p}' "$file"
-
 }

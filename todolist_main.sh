@@ -1,6 +1,9 @@
 #!/bin/bash
 sleep 0.1
 
+## Import functions
+source ~/git/cli-todolist/todolist_functions.sh
+
 ### DECLARE ###
 
 # Constants #
@@ -84,53 +87,25 @@ declare -A keybindings=(
 keybindingsOrder=("Move up" "Move down" "New task" "Change status/Confirm" "Back/Cancel" "Remove" "Trashcan" "Stall" "Duplicate" "Rename/Recover")
 
 ### PRE-EXECUTION CHECKS ###
-DEPENDENCIES=("figlet" "dialog")
+PKG_DEPENDENCIES=("figlet" "dialog")
 DISTRO=$(cat /etc/os-release | grep ^NAME | sed 's/NAME="//; s/"$//')
-if [[ "$DISTRO" == "Arch Linux" ]]
+
+for DEPENDENCY in "${PKG_DEPENDENCIES[@]}"
+do
+    check_dependency $DEPENDENCY
+done
+
+if [[ ! -d ~/.local/share/cli-todolist/ ]]
 then
-    if ! pacman -Q figlet
-    then
-        clear
-        echo "Dependency 'figlet' missing."
-        read -s -n 1  -p "Need to install dependency figlet, press enter to continue..."
-        echo
-        sudo pacman -S figlet
-    fi
-
-    if ! pacman -Q dialog
-    then
-        clear
-        echo "Dependency 'dialog' missing."
-        read -s -n 1  -p "Need to install dependency dialog, press enter to continue..."
-        echo
-        sudo pacman -S dialog 
-    fi
-
-elif [[ "$DISTRO" == "Debian" || "$DISTRO" == "Ubuntu" ]]
-then
-    if ! apt list --installed figlet
-    then
-        clear
-        echo "Dependency 'figlet' missing."
-        read -s -n 1 -p "Need to install dependency figlet, press enter to continue..."
-        echo
-        sudo apt install figlet
-    fi
-
-    if ! apt list --installed dialog
-    then
-        clear
-        echo "Dependency 'dialog' missing."
-        read -s -n 1  -p "Need to install dependency dialog, press enter to continue..."
-        echo
-        sudo apt install dialog
-    fi
+    mkdir ~/.local/share/cli-todolist/
 fi
 
-############################
+if [[ ! -d ~/.config/cli-todolist/ ]]
+then
+    mkdir ~/.config/cli-todolist/
+fi
 
-# FUNCTIONS #
-source ~/git/cli-todolist/todolist_functions.sh
+
 
 ######################################################
 
@@ -263,6 +238,8 @@ do
 
         ## EXIT
         e|E|$'\e')
+            tput cnorm
+            clear
             exit
         ;;
 
