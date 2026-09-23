@@ -3,52 +3,46 @@ sleep 0.1
 
 ### DECLARE ###
 
-# VARIABLES #
+# Constants #
 date=$(date +"%Y-%m-%d")
 bold=$(tput bold)
 normal=$(tput sgr0)
 cursive=$(tput sitm)
-#bgwhite="\e[47m"
-#bgnormal="\e[0m"
-todo_file=~/.local/share/myutils/todolist_dev/todolist_dev.txt
-todo_prev_file=~/.local/share/myutils/todolist_dev/todolist_prev_dev.txt
-todo_backup_file=~/.local/share/myutils/todolist_dev/todolist_backup_dev.txt
-trashcan_file=~/.local/share/myutils/todolist_dev/todolist_trashcan_dev.txt
-log_file=~/.local/share/myutils/todolist_dev/todolist_log_dev.txt
-vis_file=~/.local/share/myutils/todolist_dev/todolist_vis_dev.txt
-tasksDir=~/.local/share/myutils/todolist_dev/tasks/
+TODO_FILE=~/.local/share/cli-todolist/todolist.txt
+TRASHCAN_FILE=~/.local/share/cli-todolist/todolist_dev/todolist_trashcan.txt
+SHOW_STALLED_FILE=~/.config/cli-todolist/other/show_stalled.txt
+
+# VARIABLES #
 where=0
 optionswhere=0
 keywhere=0
 viswhere=0
-winwhere=0
 trashwhere=0
 currentmode=main
 needredraw=1
-show_stalled_file=~/.local/share/myutils/todolist/other/show_stalled.txt
-show_stalled=$(cat $show_stalled_file)
+SHOW_STALLED=$(cat $SHOW_STALLED_FILE)
 
 debug=0
 
 ## Settings
-theme_file=~/.local/share/myutils/todolist/settings/theme.txt
+theme_file=~/.config/cli-todolist/settings/theme.txt
 theme_setting="$(cat $theme_file)"
-highlightcolor_file=~/.local/share/myutils/todolist/settings/highlight_color.txt
+highlightcolor_file=~/.config/cli-todolist/settings/highlight_color.txt
 highlightcolor="$(cat $highlightcolor_file)"
-textcolor_file=~/.local/share/myutils/todolist/settings/text_color.txt
+textcolor_file=~/.config/cli-todolist/settings/text_color.txt
 textcolor="$(cat $textcolor_file)"
-window_size_sway=~/.local/share/myutils/todolist/settings/window_size_sway.txt
-window_size_SAFE=~/.local/share/myutils/todolist/settings/window_size_SAFE.txt
-date_file=~/.local/share/myutils/todolist/settings/date.txt
+window_size_sway=~/.config/cli-todolist/settings/window_size_sway.txt
+window_size_SAFE=~/.config/cli-todolist/settings/window_size_SAFE.txt
+date_file=~/.config/cli-todolist/settings/date.txt
 date_setting="$(cat $date_file)"
-title_file=~/.local/share/myutils/todolist/settings/title.txt
+title_file=~/.config/cli-todolist/settings/title.txt
 title_setting="$(cat $title_file)"
-lines_file=~/.local/share/myutils/todolist/settings/lines.txt
+lines_file=~/.config/cli-todolist/settings/lines.txt
 lines_setting="$(cat $lines_file)"
-linecolor_file=~/.local/share/myutils/todolist/settings/lines_color.txt
+linecolor_file=~/.config/cli-todolist/settings/lines_color.txt
 linecolor="$(cat $linecolor_file)"
-backgroundcolor_sway=~/.local/share/myutils/todolist/settings/background_color_sway.txt
-background_colorcode=~/.local/share/myutils/todolist/settings/background_color.txt
+backgroundcolor_sway=~/.config/cli-todolist/settings/background_color_sway.txt
+background_colorcode=~/.config/cli-todolist/settings/background_color.txt
 
 # ARRAYS #
 todolist=()
