@@ -122,10 +122,6 @@ draw() {
         visuals)
             printSuboption "visuals" "visualsOrder" "$viswhere" "Visuals"        
         ;;
-        
-        window)
-            printSuboption "window" "windowOrder" "$winwhere" "Window"
-        ;;
 
         trashcan)
             printTrashcan "$trashwhere"
@@ -287,9 +283,9 @@ printTrashcan() {
     unset prioTrashcan
     unset normalTrashcan
 
-    if [[ -f $trashcan_file ]]
+    if [[ -f $TRASHCAN_FILE ]]
     then
-        mapfile -t trashcan < $trashcan_file
+        mapfile -t trashcan < $TRASHCAN_FILE
     fi
 
     reorderList "trashcan"
@@ -505,7 +501,7 @@ printList() {
             fi
 
             ((numbering++))
-        elif [[ "${todolist[$i]}" == \?* && $show_stalled -eq 1 ]] # if stall
+        elif [[ "${todolist[$i]}" == \?* && $SHOW_STALLED -eq 1 ]] # if stall
         then
             noStall=0
 
@@ -542,14 +538,12 @@ printMenu() {
     unset normalList
     local nohighlight=$2
 
-    if [[ -f $todo_file ]]
+    if [[ -f $TODO_FILE ]]
     then
-        mapfile -t todolist < $todo_file
+        mapfile -t todolist < $TODO_FILE
     fi
 
     clear
-    
-    echo -e "\033[41mDEV\033[0m" 
 
     if [[ ${visuals["Date"]} == *"On"* ]]
     then
@@ -578,7 +572,7 @@ printMenu() {
         printList "$where" "$nohighlight"
     fi
 
-    if [[ $show_stalled -eq 0 ]]
+    if [[ $SHOW_STALLED -eq 0 ]]
     then
         echo
         echo " ----"
@@ -641,7 +635,7 @@ move_up() {
     declare -n list="$1"
     local cursor="$2"
     
-    if [[ $show_stalled -eq 1 ]]
+    if [[ $SHOW_STALLED -eq 1 ]]
     then
         ((cursor--))
         if [[ $cursor -lt 0 ]]
@@ -667,7 +661,7 @@ move_down() {
     declare -n list="$1"
     local cursor="$2"
 
-    if [[ $show_stalled -eq 1 ]]
+    if [[ $SHOW_STALLED -eq 1 ]]
     then
         if [[ $cursor -lt $((${#list[@]} -1 )) ]]
         then

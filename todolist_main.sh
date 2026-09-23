@@ -167,7 +167,6 @@ do
 
             #read -p " ${bold}> New To-do:${normal} " new
             new=$(dialog --stdout --inputbox "New task:" 8 70)
-            log "Trying to add \"$new\"..."
 
             if [[ -n $new ]]
             then
@@ -177,25 +176,18 @@ do
                 elif [[ $new == !* ]]
                 then
                     todolist+=("! ${new:1}")
-                    saveListToFile "todolist" "$todo_file"
+                    saveListToFile "todolist" "$TODO_FILE"
                     notify-send -t 2500 "To-Do-list" "Prio-task \"${new:1}\" was added!"
                 elif [[ $new == \?* ]]
                 then
                     todolist+=("? ${new:1}")
-                    saveListToFile "todolist" "$todo_file"
+                    saveListToFile "todolist" "$TODO_FILE"
                     notify-send -t 2500 "To-Do-list" "Stalled task \"${new:1}\" was added!"
                 else
                     todolist+=(" $new")
-                    saveListToFile "todolist" "$todo_file"
+                    saveListToFile "todolist" "$TODO_FILE"
                     notify-send -t 2500 "To-Do-list" "Task \"$new\" was added!"
                 fi
-
-                log "Added \"$new\"" >> $log_file
-            #else
-            #    draw "main" 1
-            #    printf '\e[41m%s\e[0m' "$(calcSpaces " [ERROR] Task name can't be nothing!")"
-            #    log "ERROR: Failed to add \"$new\"" >> $log_file
-            #    sleep 1.2
             fi
         ;; 
 
@@ -205,34 +197,29 @@ do
             if [[ "${todolist[$where]}" == \?* ]]; 
             then
                 todolist[$where]="${todolist[$where]:1}"
-                log "Unstalled \"${todolist[$where]}\"" >> $log_file
             else
                 todolist[$where]="?${todolist[$where]}"
-                log "Stalled \"${todolist[$where]}\"" >> $log_file
             fi
             ((where--))
-            saveListToFile "todolist" "$todo_file"
+            saveListToFile "todolist" "$TODO_FILE"
         ;;   
 
         ### hide/show stalled
         h|H)
-            if [[ $show_stalled -eq 1 ]]
+            if [[ $SHOW_STALLED -eq 1 ]]
             then
-                show_stalled=0
-                echo "0" > $show_stalled_file
-                log "Hide stalled" >> $log_file
+                SHOW_STALLED=0
+                echo "0" > $SHOW_STALLED_FILE
             else
-                show_stalled=1
-                echo "1" > $show_stalled_file
-                log "Show stalled" >> $log_file
+                SHOW_STALLED=1
+                echo "1" > $SHOW_STALLED_FILE
             fi
         ;;
 
         ## DUPLICATE
         v|V)
             todolist+=("${todolist[$where]}")
-            log "Duplicated $todolist[$where]" >> $log_file
-            saveListToFile "todolist" "$todo_file"
+            saveListToFile "todolist" "$TODO_FILE"
         ;;    
         
         ## REMOVE
@@ -244,7 +231,6 @@ do
             if [[ $confirmremove == "" ]]
             then
                 trashcan+=("${todolist[$where]}")
-                log "Removed \"${todolist[$where]}\" and moved to trashcan" >> $log_file
                 todolist=("${todolist[@]:0:$where}" "${todolist[@]:$(($where + 1))}") # overwrite array with elements before and after the element that is being removed, that way the indexes are correct again
                 if [[ ! $where -eq 0 ]]
                 then
@@ -252,8 +238,8 @@ do
                 fi
             fi
 
-            saveListToFile "todolist" "$todo_file"
-            saveListToFile "trashcan" "$trashcan_file"
+            saveListToFile "todolist" "$TODO_FILE"
+            saveListToFile "trashcan" "$TRASHCAN_FILE"
         ;;
 
         ## CLEAR LIST
@@ -267,8 +253,7 @@ do
                 if [[ $clear == "" ]]
                 then
                     unset todolist
-                    rm $todo_file
-                    lof "Cleared list" >> $log_file
+                    rm $TODO_FILE
                     notify-send -t 2500 "To-Do-list" "List was cleared!"
                 fi
             fi
@@ -278,7 +263,6 @@ do
 
         ## EXIT
         e|E|$'\e')
-            log "TERMINATED" >> $log_file
             exit
         ;;
 
@@ -292,51 +276,22 @@ do
                 else
                     todolist[$where]="!${todolist[$where]}"
                 fi
-                saveListToFile "todolist" "$todo_file"
+                saveListToFile "todolist" "$TODO_FILE"
             fi
         ;;
 
-        ## MANUAL BACKUP
-        b|B)
-            read -n 1 -s -p " > Do you want to perfom a backup?: " confirm
-
-            if [[ $confirm == "" ]]
-            then
-                saveListToFile "todolist" "$todo_backup_file"
-                log "Manual backup performed" >> $log_file
-
-            fi
-        ;;
-
-        ## RENAME <--- INCOMPLETE
+        ## RENAME
         r|R)
             currentmode=main
             draw "main" 1
             tput cnorm
-            #read -p " > Input new name for task $(($where+1)): " newname
+
             if [[ ${todolist[$where]} == !* ]]
             then
                 newname=$(dialog --stdout --inputbox "New task:" 8 70 "${todolist[$where]:2}")
             else
                 newname=$(dialog --stdout --inputbox "New task:" 8 70 "${todolist[$where]:1}")
             fi
-
-            #if [[ $newname == "c" ]]
-            #then
-            #    :
-            #elif [[ -z $newname ]]
-            #then
-            #    draw "main" 1
-            #    printf '\e[41m%s\e[0m' "$(calcSpaces " [ERROR] Task name can't be nothing!")" 
-            #    sleep 1.2
-            #else
-            #    if [[ "${todolist[$where]}" == !* ]]
-            #    then
-            #        todolist[$where]="! $newname"
-            #    else
-            #        todolist[$where]=" $newname"
-            #    fi
-            #fi
 
             if [[ -n $newname ]]
             then
@@ -348,12 +303,7 @@ do
                 fi
             fi
 
-            saveListToFile "todolist" "$todo_file"
-        ;;
-
-        ## UNDO
-        z|Z)
-            :
+            saveListToFile "todolist" "$TODO_FILE"
         ;;
 
         ## TRASHCAN
@@ -383,8 +333,8 @@ do
                     r|R)
                         todolist+=("${trashcan[$trashwhere]}")
                         trashcan=("${trashcan[@]:0:$trashwhere}" "${trashcan[@]:$(($trashwhere + 1))}") # overwrite array with elements before and after the element that is being removed, that way the indexes are correct again
-                        saveListToFile "todolist" "$todo_file"
-                        saveListToFile "trashcan" "$trashcan_file"
+                        saveListToFile "todolist" "$TODO_FILE"
+                        saveListToFile "trashcan" "$TRASHCAN_FILE"
                     ;;
 
                     ## REMOVE
@@ -399,7 +349,7 @@ do
                                 ((trashwhere--))
                             fi
                         fi
-                        saveListToFile "trashcan" "$trashcan_file"
+                        saveListToFile "trashcan" "$TRASHCAN_FILE"
                     ;;
 
                     ## EMPTY TRASHCAN
@@ -412,7 +362,7 @@ do
                             if [[ $clear == "" ]]
                             then
                                 unset trashcan
-                                rm $trashcan_file
+                                rm $TRASHCAN_FILE
                             fi
                         fi
                     ;;
@@ -611,17 +561,6 @@ do
                                                             echo "37" > $linecolor_file
 
                                                             echo "Default" > $theme_file
-
-                                                            #if [[ ! visuals["Background Color"] == "#333333" ]]
-                                                            #then
-                                                            #    visuals["Background Color"] = "#3333332"
-                                                            #    echo "bindsym \$mod+t exec kitty --title "To-Do" --class "todo" --override background=#333333 --override foreground=#ffffff -e ~/scripts/todolist/todolist_main.sh" > $backgroundcolor_sway
-                                                            #    echo "#333333" > $background_colorcode
-                                                            #    swaymsg reload
-                                                            #    killall waybar && waybar &
-                                                            #    exit
-                                                            #fi
-                                                        ;;
                                                     esac
                                                 ;;
                                                 "Text color")
@@ -677,23 +616,7 @@ do
                                                         ;;
                                                     esac
                                                 ;;
-                                                "Background color")
-                                                    echo
-                                                    echo "${bold} This is an EXPERIMENTAL feature and could break stuff!${normal}"
-                                                    echo
-                                                    read -p " > Input colorcode (syntax: #ffffff): #" background_colorcode_temp
-                                                    read -p " >> Are you sure you want to set #"$background_colorcode_temp" as your background colorcode? (Y/n) " confirm
-                                                    visuals["Theme"]="Custom0"
-                                                    echo "Custom" > $theme_file
-                                                    if [[ $confirm == "Y" ]]
-                                                    then
-                                                        echo "bindsym \$mod+t exec kitty --title "To-Do" --class "todo" --override background=#"$background_colorcode_temp" --override foreground=#ffffff -e ~/scripts/todolist/todolist_main.sh" > $backgroundcolor_sway
-                                                        echo "#"$background_colorcode_temp"" > $background_colorcode
-                                                        swaymsg reload
-                                                        killall waybar && waybar &
-                                                        exit
-                                                    fi
-                                                ;;
+
                                                 "Highlight color")
                                                     visuals["Theme"]="Custom0"
                                                     echo "Custom" > $theme_file
@@ -857,70 +780,6 @@ do
                                             visloop=0
                                     esac
                                 done
-                            elif [[ ${optionsList[$optionswhere]} == "Windowoptions" ]]
-                            then
-                                winloop=1
-                                while [[ $winloop -eq 1 ]];
-                                do
-                                    currentmode=window
-                                    tput civis
-                                    draw "window"
-
-                                    option5=$(read_key)
-
-                                    case $option5 in
-                                        ## UP
-                                        w|W|$'\e[A')
-                                            draw "window"
-                                            winwhere=$(move_up "window" "$winwhere")
-                                        ;;
-
-                                        ## DOWN
-                                        s|S|$'\e[B')
-                                            draw "window"
-                                            winwhere=$(move_down "window" "$winwhere")
-                                        ;;
-
-                                        ## SELECT
-                                        "")
-                                            case "${windowOrder[$winwhere]}" in
-                                                *Mode*)
-                                                    :
-                                                ;;
-
-                                                *Size*)
-                                                    echo
-                                                    read -p " > Input Width: " windowWidth
-                                                    read -p " > Input Height: " windowHeight
-                                                    echo "$windowWidth"x"$windowHeight" > $window_size_SAFE
-                                                    window["Size"]="$(cat $window_size_SAFE)1"
-                                                    echo "for_window [app_id="todo"] floating enable, resize set $windowWidth $windowHeight, border pixel 4" > $window_size_sway
-                                                    swaymsg reload
-                                                    killall waybar && waybar &
-                                                    exit
-                                                ;;
-
-                                                *Position*)
-                                                    :
-                                                ;;
-                                            esac
-                                        ;;
-
-                                        ## DEBUG
-                                        0)
-                                            if [[ $debug -eq 0 ]]
-                                            then
-                                                debug=1
-                                            else
-                                                debug=0
-                                            fi
-                                        ;;
-
-                                        ## ESCAPE
-                                        e|E|$'\e')
-                                            winloop=0
-                                    esac
-                                done
                             fi
                         ;;
 
@@ -945,7 +804,7 @@ do
 
         ## DONE
         "")
-            if [[ -f $todo_file ]]
+            if [[ -f $TODO_FILE ]]
             then
                 #printMenu
                 draw "main" 0
@@ -957,7 +816,7 @@ do
                     else
                         todolist[$where]="${todolist[$where]}#done"
                     fi
-                    saveListToFile "todolist" "$todo_file"
+                    saveListToFile "todolist" "$TODO_FILE"
                 fi
             fi
         ;;
