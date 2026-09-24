@@ -5,17 +5,6 @@ DEPENDENCIES=("figlet" "dialog")
 DISTRO=$(cat /etc/os-release | grep ^NAME | sed 's/NAME="//; s/"$//')
 SAFETY_MODE=false
 
-case $1 in
-    -S|--safety-mode)
-        SAFETY_MODE=true
-    ;;
-
-    *)
-        echo "Invalid argument '$1'!"
-        exit
-    ;;
-esac
-
 # FUNCTIONS
 check_dependency() {        # check if dependencies are installed, if not: install.
     local DEPENDENCY="$1"
@@ -45,44 +34,62 @@ check_dependency() {        # check if dependencies are installed, if not: insta
     fi
 }
 
-abort() {
-    echo "Aborting..."
-    sleep 1
+clean_up() {
     echo "Cleaning up..."
-    sleep 2
-    if [[ -d /usr/local/lib/cli-todolist/ ]]
+    sleep 1
+    if [[ -d /usr/local/lib/tui-todolist/ ]]
     then
-        echo "Executing 'sudo rm -r /usr/local/lib/cli-todolist/'..."
-        sleep 2
-        sudo rm -r /usr/local/lib/cli-todolist/
+        echo "Executing 'sudo rm -r /usr/local/lib/tui-todolist/'..."
+        sleep 1
+        sudo rm -r /usr/local/lib/tui-todolist/
         sleep 1
         echo " > Done!"
     fi
 
-    if [[ -f cli-todolist ]]
+    if [[ -f tui-todolist ]]
     then
-        echo "Executing 'rm cli-todolist'..."
-        sleep 2
-        rm cli-todolist
+        echo "Executing 'rm tui-todolist'..."
+        sleep 1
+        rm tui-todolist
         sleep 1
         echo " > Done!"
     fi
 
-    if [[ -f /usr/local/bin/cli-todolist ]]
+    if [[ -f /usr/local/bin/tui-todolist ]]
     then
-        echo "Executing 'sudo rm /usr/local/bin/cli-todolist '..."
-        sleep 2
-        sudo rm /usr/local/bin/cli-todolist
+        echo "Executing 'sudo rm /usr/local/bin/tui-todolist'..."
+        sleep 1
+        sudo rm /usr/local/bin/tui-todolist
         sleep 1
         echo " > Done!"
     fi
     exit
 }
 
+## ARGS ##
+
+if [[ -n $1 ]]
+then
+    case $1 in
+        -S|--safety-mode)
+            SAFETY_MODE=true
+        ;;
+
+        -U|--uninstall)
+            clean_up
+        ;;
+
+        *)
+            echo "Invalid argument '$1'!"
+            exit
+        ;;
+    esac
+fi
+
 ########################
 
 ### MAIN ###
-if ! pwd | grep cli-todolist > /dev/null 2>&1
+if ! pwd | grep tui-todolist > /dev/null 2>&1
     then
         echo "Please execute install.sh from pulled git repo."
         echo "Aborting..."
@@ -91,55 +98,29 @@ fi
 
 if [[ $SAFETY_MODE == "false" ]]
 then
-    echo "Creating directory '/usr/local/lib/cli-todolist'"
-    sleep 2
-    sudo mkdir /usr/local/lib/cli-todolist
+    echo "Creating directory '/usr/local/lib/tui-todolist'"
+    sleep 1
+    sudo mkdir /usr/local/lib/tui-todolist
     echo " > Done!"
-    sleep 2
+    sleep 1
 
-    echo "Copy/pasting 'todolist_main.sh' into'/usr/local/lib/cli-todolist/'"
-    sleep 2
-    sudo cp todolist_main.sh /usr/local/lib/cli-todolist/todolist_main.sh
+    echo "Copy/pasting 'todolist_main.sh' into'/usr/local/lib/tui-todolist/'"
+    sleep 1
+    sudo cp todolist_main.sh /usr/local/lib/tui-todolist/todolist_main.sh
     echo " > Done!"
-    sleep 2
+    sleep 1
 
-    echo "Copy/pasting 'todolist_functions.sh' into'/usr/local/lib/cli-todolist/'"
-    sleep 2
-    sudo cp todolist_functions.sh /usr/local/lib/cli-todolist/todolist_functions.sh
+    echo "Copy/pasting 'todolist_functions.sh' into'/usr/local/lib/tui-todolist/'"
+    sleep 1
+    sudo cp todolist_functions.sh /usr/local/lib/tui-todolist/todolist_functions.sh
     echo " > Done!"
-    sleep 2
+    sleep 1
 
-    echo "Creating file 'cli-todolist' in '$(pwd)'"
-    sleep 2
-    sudo touch cli-todolist
+    echo "Copy/pasting 'bin/tui-todolist' into '/usr/local/bin/'"
+    sleep 1
+    sudo cp bin/tui-todolist /usr/local/bin/tui-todolist
     echo " > Done!"
-    sleep 2
-
-    echo "Chaning permissions of 'cli-todolist' to 757"
-    sleep 2
-    sudo chmod 757 cli-todolist
-    echo " > Done!"
-    sleep 2
-
-    echo "Pasting needed bash code into 'cli-todolist'"
-    sleep 2
-    echo '#!/usr/bin/env bash' >> cli-todolist
-    echo 'source /usr/local/lib/cli-todolist/todolist_functions.sh' >> cli-todolist
-    echo 'source /usr/local/lib/cli-todolist/todolist_main.sh' >> cli-todolist
-    echo " > Done!"
-    sleep 2
-
-    echo "Making 'cli-todolist' executable"
-    sleep 2
-    sudo chmod +x cli-todolist
-    echo " > Done!"
-    sleep 2
-
-    echo "Moving 'cli-todolist' into '/usr/bin/bin/'"
-    sleep 2
-    sudo mv cli-todolist /usr/local/bin/cli-todolist
-    echo " > Done!"
-    sleep 2
+    sleep 1
 
     for DEPENDENCY in "${DEPENDENCIES[@]}"
     do
@@ -149,102 +130,60 @@ then
     echo "ALL DONE!"
 elif [[ $SAFETY_MODE == "true" ]]
 then
-    read -p "Create directory '/usr/local/lib/cli-todolist'? (Y/n) " confirm
+    read -p "Create directory '/usr/local/lib/tui-todolist'? (Y/n) " confirm
     if [[ $confirm == "Y" ]]
     then
-        echo "Creating directory '/usr/local/lib/cli-todolist'"
-        sleep 2
-        sudo mkdir /usr/local/lib/cli-todolist
+        echo "Creating directory '/usr/local/lib/tui-todolist'"
+        sleep 1
+        sudo mkdir /usr/local/lib/tui-todolist
         echo " > Done!"
-        sleep 2
+        sleep 1
     else
-        abort
+        echo "Aborting..."
+        sleep 1
+        clean_up
     fi
 
-    read -p "Copy/paste' todolist_main.sh' into '/usr/local/lib/cli-todolist/'? (Y/n) " confirm
+    read -p "Copy/paste' todolist_main.sh' into '/usr/local/lib/tui-todolist/'? (Y/n) " confirm
     if [[ $confirm == "Y" ]]
     then
-        echo "Copy/pasting 'todolist_main.sh' into '/usr/local/lib/cli-todolist/'"
-        sleep 2
-        sudo cp todolist_main.sh /usr/local/lib/cli-todolist/todolist_main.sh
+        echo "Copy/pasting 'todolist_main.sh' into '/usr/local/lib/tui-todolist/'"
+        sleep 1
+        sudo cp todolist_main.sh /usr/local/lib/tui-todolist/todolist_main.sh
         echo " > Done!"
-        sleep 2
+        sleep 1
     else
-        abort
+        echo "Aborting..."
+        sleep 1
+        clean_up
     fi
 
-    read -p "Copy/paste' 'todolist_functions.sh' into '/usr/local/lib/cli-todolist/'? (Y/n) " confirm
+    read -p "Copy/paste' 'todolist_functions.sh' into '/usr/local/lib/tui-todolist/'? (Y/n) " confirm
     if [[ $confirm == "Y" ]]
     then
-        echo "Copy/pasting 'todolist_functions.sh' into '/usr/local/lib/cli-todolist/'"
-        sleep 2
-        sudo cp todolist_functions.sh /usr/local/lib/cli-todolist/todolist_functions.sh
+        echo "Copy/pasting 'todolist_functions.sh' into '/usr/local/lib/tui-todolist/'"
+        sleep 1
+        sudo cp todolist_functions.sh /usr/local/lib/tui-todolist/todolist_functions.sh
         echo " > Done!"
-        sleep 2
+        sleep 1
     else
-        abort
+        echo "Aborting..."
+        sleep 1
+        clean_up
     fi
 
-    read -p "Create file 'cli-todolist' in '$(pwd)'? (Y/n) " confirm
+    read -p "Copy/paste 'bin/tui-todolist' into '/usr/local/bin/'? (Y/n) " confirm
     if [[ $confirm == "Y" ]]
     then
-        echo "Creating file 'cli-todolist' in '$(pwd)'"
-        sleep 2
-        sudo touch cli-todolist
+        echo "Copy/pasting 'bin/tui-todolist' into '/usr/bin/bin/'"
+        sleep 1
+        sudo cp bin/tui-todolist /usr/local/bin/tui-todolist
         echo " > Done!"
-        sleep 2
+        sleep 1
     else
-        abort
-    fi
-
-    read -p "Change permissions of 'cli-todolist' to 757? (Y/n) " confirm
-    if [[ $confirm == "Y" ]]
-    then
-        echo "Changing permissions of 'cli-todolist' to 757"
-        sleep 2
-        sudo chmod 757 cli-todolist
-        echo " > Done!"
-        sleep 2
-    else
-        abort
-    fi
-
-    read -p "Paste needed bash code into 'cli-todolist'? (Y/n) " confirm
-    if [[ $confirm == "Y" ]]
-    then
-        echo "Pasting needed bash code into 'cli-todolist'"
-        sleep 2
-        echo '#!/usr/bin/env bash' >> cli-todolist
-        echo 'source /usr/local/lib/cli-todolist/todolist_functions.sh' >> cli-todolist
-        echo 'source /usr/local/lib/cli-todolist/todolist_main.sh' >> cli-todolist
-        echo " > Done!"
-        sleep 2
-    else
-        abort
-    fi
-
-    read -p "Make 'cli-todolist' executable? (Y/n) " confirm
-    if [[ $confirm == "Y" ]]
-    then
-        echo "Making 'cli-todolist' executable"
-        sleep 2
-        sudo chmod +x cli-todolist
-        echo " > Done!"
-        sleep 2
-    else
-        abort
-    fi
-
-    read -p "Move 'cli-todolist' into '/usr/bin/bin/'? (Y/n) " confirm
-    if [[ $confirm == "Y" ]]
-    then
-        echo "Moving 'cli-todolist' into '/usr/bin/bin/'"
-        sleep 2
-        sudo mv cli-todolist /usr/local/bin/cli-todolist
-        echo " > Done!"
-        sleep 2
-    else
-        abort
+        echo "Aborting..."
+        sleep 1
+        clean_up
     fi
 
     echo
