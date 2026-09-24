@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if ! pwd | grep tui-todolist > /dev/null 2>&1
+    then
+        echo "Please execute install.sh from pulled git repo."
+        echo "Aborting..."
+        exit
+fi
+
 # CONSTANTS
 DEPENDENCIES=("figlet" "dialog")
 DISTRO=$(cat /etc/os-release | grep ^NAME | sed 's/NAME="//; s/"$//')
@@ -55,6 +62,15 @@ clean_up() {
         echo " > Done!"
     fi
 
+    if [[ -f ~/.config/tui-todolist/config.json ]]
+    then
+        echo "Executing 'sudo rm ~/.config/tui-todolist/config.json'..."
+        sleep 1
+        sudo rm ~/.config/tui-todolist/config.json
+        sleep 1
+        echo " > Done!"
+    fi
+    
     if [[ -f /usr/local/bin/tui-todolist ]]
     then
         echo "Executing 'sudo rm /usr/local/bin/tui-todolist'..."
@@ -67,7 +83,6 @@ clean_up() {
 }
 
 ## ARGS ##
-
 if [[ -n $1 ]]
 then
     case $1 in
@@ -89,38 +104,38 @@ fi
 ########################
 
 ### MAIN ###
-if ! pwd | grep tui-todolist > /dev/null 2>&1
-    then
-        echo "Please execute install.sh from pulled git repo."
-        echo "Aborting..."
-        exit
-fi
 
 if [[ $SAFETY_MODE == "false" ]]
 then
     echo "Creating directory '/usr/local/lib/tui-todolist'"
-    sleep 1
+    sleep 0.5
     sudo mkdir /usr/local/lib/tui-todolist
     echo " > Done!"
-    sleep 1
+    sleep 0.5
 
     echo "Copy/pasting 'todolist_main.sh' into'/usr/local/lib/tui-todolist/'"
-    sleep 1
+    sleep 0.5
     sudo cp todolist_main.sh /usr/local/lib/tui-todolist/todolist_main.sh
     echo " > Done!"
-    sleep 1
+    sleep 0.5
 
     echo "Copy/pasting 'todolist_functions.sh' into'/usr/local/lib/tui-todolist/'"
-    sleep 1
+    sleep 0.5
     sudo cp todolist_functions.sh /usr/local/lib/tui-todolist/todolist_functions.sh
     echo " > Done!"
-    sleep 1
+    sleep 0.5
+
+    echo "Copy/pasting 'config.json' into '~/.config/tui-todolist/'"
+    sleep 0.5
+    sudo cp config.json ~/.config/tui-todolist/config.json
+    echo " > Done!"
+    sleep 0.5
 
     echo "Copy/pasting 'bin/tui-todolist' into '/usr/local/bin/'"
-    sleep 1
+    sleep 0.5
     sudo cp bin/tui-todolist /usr/local/bin/tui-todolist
     echo " > Done!"
-    sleep 1
+    sleep 0.5
 
     for DEPENDENCY in "${DEPENDENCIES[@]}"
     do
@@ -164,6 +179,20 @@ then
         echo "Copy/pasting 'todolist_functions.sh' into '/usr/local/lib/tui-todolist/'"
         sleep 1
         sudo cp todolist_functions.sh /usr/local/lib/tui-todolist/todolist_functions.sh
+        echo " > Done!"
+        sleep 1
+    else
+        echo "Aborting..."
+        sleep 1
+        clean_up
+    fi
+
+    read -p "Copy/paste 'config.json' into '~/.config/tui-todolist/'? (Y/n) " confirm
+    if [[ $confirm == "Y" ]]
+    then
+        echo "Copy/pasting 'config.json' into '~/.config/tui-todolist/'"
+        sleep 1
+        sudo cp config.json ~/.config/tui-todolist/config.json
         echo " > Done!"
         sleep 1
     else

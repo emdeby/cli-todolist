@@ -13,7 +13,7 @@ normal=$(tput sgr0)
 cursive=$(tput sitm)
 TODO_FILE=~/.local/share/cli-todolist/todolist.txt
 TRASHCAN_FILE=~/.local/share/cli-todolist/todolist_dev/todolist_trashcan.txt
-SHOW_STALLED_FILE=~/.config/cli-todolist/other/show_stalled.txt
+SHOW_STALLED_FILE=~/.config/tui-todolist/other/show_stalled.txt
 
 # VARIABLES #
 where=0
@@ -28,24 +28,14 @@ SHOW_STALLED=$(cat $SHOW_STALLED_FILE)
 debug=0
 
 ## Settings
-theme_file=~/.config/cli-todolist/settings/theme.txt
-theme_setting="$(cat $theme_file)"
-highlightcolor_file=~/.config/cli-todolist/settings/highlight_color.txt
-highlightcolor="$(cat $highlightcolor_file)"
-textcolor_file=~/.config/cli-todolist/settings/text_color.txt
-textcolor="$(cat $textcolor_file)"
-window_size_sway=~/.config/cli-todolist/settings/window_size_sway.txt
-window_size_SAFE=~/.config/cli-todolist/settings/window_size_SAFE.txt
-date_file=~/.config/cli-todolist/settings/date.txt
-date_setting="$(cat $date_file)"
-title_file=~/.config/cli-todolist/settings/title.txt
-title_setting="$(cat $title_file)"
-lines_file=~/.config/cli-todolist/settings/lines.txt
-lines_setting="$(cat $lines_file)"
-linecolor_file=~/.config/cli-todolist/settings/lines_color.txt
-linecolor="$(cat $linecolor_file)"
-backgroundcolor_sway=~/.config/cli-todolist/settings/background_color_sway.txt
-background_colorcode=~/.config/cli-todolist/settings/background_color.txt
+CONFIG_FILE=~/.config/tui-todolist/config.json
+theme_setting="$(jq -r .theme $CONFIG_FILE)"
+highlightcolor="$(jq -r .highlight_color $CONFIG_FILE)"
+textcolor="$(jq -r .text_color $CONFIG_FILE)"
+linecolor="$(jq -r .line_color $CONFIG_FILE)"
+date_setting="$(jq -r .date $CONFIG_FILE)"
+title_setting="$(jq -r .title $CONFIG_FILE)"
+lines_setting="$(jq -r .lines $CONFIG_FILE)"
 
 # ARRAYS #
 todolist=()
@@ -65,12 +55,12 @@ declare -A visuals=(
     ["Theme"]=""$theme_setting"0"
     ["Text color"]="White1"
     ["Highlight color"]="White2"
-    ["Date"]=""$date_setting"3"
-    ["Title"]=""$title_setting"4"
-    ["Lines"]=""$lines_setting"5"
-    ["Line color"]="White6"
+    ["Line color"]="White3"
+    ["Date"]=""$date_setting"4"
+    ["Title"]=""$title_setting"5"
+    ["Lines"]=""$lines_setting"6"
 )
-visualsOrder=("Theme" "Text color" "Highlight color" "Date" "Title" "Lines" "Line color")
+visualsOrder=("Theme" "Text color" "Highlight color" "Line color" "Date" "Title" "Lines")
 
 declare -A keybindings=( 
     ["Move up"]="W / ARROW UP0" 
@@ -476,266 +466,244 @@ do
                                                     case ${visuals["${visualsOrder[$viswhere]}"]} in
                                                         *Default*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Minimal$viswhere"
-                                                            visuals["Text color"]="White1"
-                                                            textcolor=37
-                                                            echo "37" > $textcolor_file
-                                                            visuals["Highlight color"]="White3"
-                                                            highlightcolor=47
-                                                            echo "47" > $highlightcolor_file
                                                             visuals["Date"]="Off4"
-                                                            echo "Off" > $date_file
+                                                            change_setting "date" "Off"
                                                             visuals["Title"]="Off5"
-                                                            echo "Off" > $title_file
+                                                            change_setting "title" "Off"
                                                             visuals["Lines"]="Off6"
-                                                            echo "Off" > $lines_file
-                                                            visuals["Line color"]="White7"
-                                                            textcolor=37
-                                                            echo "37" > $linecolor_file
-
-                                                            echo "Minimal" > $theme_file
+                                                            change_setting "lines" "Off"
+                                                            change_setting "theme" "Minimal"
                                                         ;;
 
                                                         *Minimal*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Default$viswhere"
-                                                            visuals["Text color"]="White1"
-                                                            textcolor=37
-                                                            echo "37" > $textcolor_file
-                                                            visuals["Highlight color"]="White3"
-                                                            highlightcolor=47
-                                                            echo "47" > $highlightcolor_file
                                                             visuals["Date"]="On4"
-                                                            echo "On" > $date_file
+                                                            change_setting "date" "On"
                                                             visuals["Title"]="On5"
-                                                            echo "On" > $title_file
+                                                            change_setting "title" "On"
                                                             visuals["Lines"]="On6"
-                                                            echo "On" > $lines_file
-                                                            visuals["Line color"]="White7"
-                                                            textcolor=37
-                                                            echo "37" > $linecolor_file
+                                                            change_setting "lines" "On"
 
-                                                            echo "Default" > $theme_file
+                                                            change_setting "theme" "Default"
                                                         ;;
 
                                                         *Custom*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Default$viswhere"
                                                             visuals["Text color"]="White1"
                                                             textcolor=37
-                                                            echo "37" > $textcolor_file
-                                                            visuals["Highlight color"]="White3"
+                                                            change_setting "text_color" "37"
+                                                            visuals["Highlight color"]="White2"
                                                             highlightcolor=47
-                                                            echo "47" > $highlightcolor_file
-                                                            visuals["Text color"]="White1"
-                                                            textcolor=37
-                                                            echo "37" > $textcolor_file
+                                                            change_setting "highlight_color" "47"
                                                             visuals["Date"]="On4"
-                                                            echo "On" > $date_file
+                                                            change_setting "date" "On"
                                                             visuals["Title"]="On5"
-                                                            echo "On" > $title_file
+                                                            change_setting "title" "On"
                                                             visuals["Lines"]="On6"
-                                                            echo "On" > $lines_file
-                                                            visuals["Line color"]="White7"
-                                                            textcolor=37
-                                                            echo "37" > $linecolor_file
-
-                                                            echo "Default" > $theme_file
+                                                            change_setting "lines" "On"
+                                                            visuals["Line color"]="White3"
+                                                            linecolor=37
+                                                            change_setting "line_color" "37"
+                                                            
+                                                            change_setting "theme" "Default"
                                                     esac
                                                 ;;
                                                 "Text color")
                                                     visuals["Theme"]="Custom0"
-                                                    echo "Custom" > $theme_file
+                                                    change_setting "theme" "Custom"
                                                     case ${visuals["${visualsOrder[$viswhere]}"]} in
                                                         *White*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Black$viswhere"
                                                             textcolor=30
-                                                            echo "30" > $textcolor_file
+                                                            change_setting "text_color" "30"
                                                         ;;
 
                                                         *Black*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Red$viswhere"
                                                             textcolor=31
-                                                            echo "31" > $textcolor_file
+                                                            change_setting "text_color" "31"
                                                         ;;
 
                                                         *Red*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Green$viswhere"
                                                             textcolor=32
-                                                            echo "32" > $textcolor_file
+                                                            change_setting "text_color" "32"
                                                         ;;
 
                                                         *Green*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Yellow$viswhere"
                                                             textcolor=33
-                                                            echo "33" > $textcolor_file
+                                                            change_setting "text_color" "33"
                                                         ;;
 
                                                         *Yellow*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Blue$viswhere"
                                                             textcolor=34
-                                                            echo "34" > $textcolor_file
+                                                            change_setting "text_color" "34"
                                                         ;;
 
                                                         *Blue*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Magenta$viswhere"
                                                             textcolor=35
-                                                            echo "35" > $textcolor_file
+                                                            change_setting "text_color" "35"
                                                         ;;
 
                                                         *Magenta*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Cyan$viswhere"
                                                             textcolor=36
-                                                            echo "36" > $textcolor_file
+                                                            change_setting "text_color" "36"
                                                         ;;
 
                                                         *Cyan*)
                                                             visuals["${visualsOrder[$viswhere]}"]="White$viswhere"
                                                             textcolor=37
-                                                            echo "37" > $textcolor_file
+                                                            change_setting "text_color" "37"
                                                         ;;
                                                     esac
                                                 ;;
 
                                                 "Highlight color")
                                                     visuals["Theme"]="Custom0"
-                                                    echo "Custom" > $theme_file
+                                                    change_setting "theme" "Custom"
                                                     case ${visuals["${visualsOrder[$viswhere]}"]} in
                                                         *White*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Red$viswhere"
                                                             highlightcolor=41
-                                                            echo "41" > $highlightcolor_file
+                                                            change_setting "highlight_color" "41"
                                                         ;;
                                                         
                                                         *Red*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Green$viswhere"
                                                             highlightcolor=42
-                                                            echo "42" > $highlightcolor_file
+                                                            change_setting "highlight_color" "42"
                                                         ;;
 
                                                         *Green*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Yellow$viswhere"
                                                             highlightcolor=43
-                                                            echo "43" > $highlightcolor_file
+                                                            change_setting "highlight_color" "43"
                                                         ;;
 
                                                         *Yellow*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Blue$viswhere"
                                                             highlightcolor=44
-                                                            echo "44" > $highlightcolor_file
+                                                            change_setting "highlight_color" "44"
                                                         ;;
 
                                                         *Blue*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Magenta$viswhere"
                                                             highlightcolor=45
-                                                            echo "45" > $highlightcolor_file
+                                                            change_setting "highlight_color" "45"
                                                         ;;
 
                                                         *Magenta*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Cyan$viswhere"
                                                             highlightcolor=46
-                                                            echo "46" > $highlightcolor_file
+                                                            change_setting "highlight_color" "46"
                                                         ;;
 
                                                         *Cyan*)
                                                             visuals["${visualsOrder[$viswhere]}"]="White$viswhere"
                                                             highlightcolor=47
-                                                            echo "47" > $highlightcolor_file
+                                                            change_setting "highlight_color" "47"
                                                         ;;
                                                     esac
                                                 ;;
                                                 Date)
                                                     visuals["Theme"]="Custom0"
-                                                    echo "Custom" > $theme_file
+                                                    change_setting "theme" "Custom"
                                                     case ${visuals["${visualsOrder[$viswhere]}"]} in
                                                         *On*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Off$viswhere"
-                                                            echo "Off" > $date_file
+                                                            change_setting "date" "Off"
                                                         ;;
                                                         
                                                         *Off*)
                                                             visuals["${visualsOrder[$viswhere]}"]="On$viswhere"
-                                                            echo "On" > $date_file
+                                                            change_setting "date" "On"
                                                         ;;
                                                     esac
                                                 ;;
                                                 Title)
                                                     visuals["Theme"]="Custom0"
-                                                    echo "Custom" > $theme_file
+                                                    change_setting "theme" "Custom"
                                                     case ${visuals["${visualsOrder[$viswhere]}"]} in
                                                         *On*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Off$viswhere"
-                                                            echo "Off" > $title_file
+                                                            change_setting "title" "Off"
                                                         ;;
                                                         
                                                         *Off*)
                                                             visuals["${visualsOrder[$viswhere]}"]="On$viswhere"
-                                                            echo "On" > $title_file
+                                                            change_setting "title" "On"
                                                         ;;
                                                     esac
                                                 ;;
                                                 Lines)
                                                     visuals["Theme"]="Custom0"
-                                                    echo "Custom" > $theme_file
+                                                    change_setting "theme" "Custom"
                                                     case ${visuals["${visualsOrder[$viswhere]}"]} in
                                                         *On*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Off$viswhere"
-                                                            echo "Off" > $lines_file
+                                                            change_setting "lines" "Off"
                                                         ;;
                                                         
                                                         *Off*)
                                                             visuals["${visualsOrder[$viswhere]}"]="On$viswhere"
-                                                            echo "On" > $lines_file
+                                                            change_setting "lines" "On"
                                                         ;;
                                                     esac
                                                 ;;
                                                 "Line color")
                                                     visuals["Theme"]="Custom0"
-                                                    echo "Custom" > $theme_file
+                                                    change_setting "theme" "Custom"
                                                     case ${visuals["${visualsOrder[$viswhere]}"]} in
                                                         *White*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Black$viswhere"
                                                             linecolor=30
-                                                            echo "30" > $linecolor_file
+                                                            change_setting "line_color" "30"
                                                         ;;
 
                                                         *Black*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Red$viswhere"
                                                             linecolor=31
-                                                            echo "31" > $linecolor_file
+                                                            change_setting "line_color" "31"
                                                         ;;
 
                                                         *Red*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Green$viswhere"
                                                             linecolor=32
-                                                            echo "32" > $linecolor_file
+                                                            change_setting "line_color" "32"
                                                         ;;
 
                                                         *Green*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Yellow$viswhere"
                                                             linecolor=33
-                                                            echo "33" > $linecolor_file
+                                                            change_setting "line_color" "33"
                                                         ;;
 
                                                         *Yellow*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Blue$viswhere"
                                                             linecolor=34
-                                                            echo "34" > $linecolor_file
+                                                            change_setting "line_color" "34"
                                                         ;;
 
                                                         *Blue*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Magenta$viswhere"
                                                             linecolor=35
-                                                            echo "35" > $linecolor_file
+                                                            change_setting "line_color" "35"
                                                         ;;
 
                                                         *Magenta*)
                                                             visuals["${visualsOrder[$viswhere]}"]="Cyan$viswhere"
                                                             linecolor=36
-                                                            echo "36" > $linecolor_file
+                                                            change_setting "line_color" "36"
                                                         ;;
 
                                                         *Cyan*)
                                                             visuals["${visualsOrder[$viswhere]}"]="White$viswhere"
                                                             linecolor=37
-                                                            echo "37" > $linecolor_file
+                                                            change_setting "line_color" "37"
                                                         ;;
                                                     esac
                                                 ;;

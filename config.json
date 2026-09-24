@@ -1,8 +1,9 @@
 {
-    "theme": "Default",
-    "text_color": "37",
-    "highlight_color": "47",
-    "date": "On",
-    "title": "On",
-    "lines": "On"
+  "theme": "Default",
+  "text_color": "37",
+  "highlight_color": "47",
+  "line_color": "37",
+  "date": "On",
+  "title": "On",
+  "lines": "On"
 }

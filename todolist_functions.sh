@@ -628,7 +628,7 @@ printEmpty() {
 }
 
 printLine() {
-    printf  '%*s\n' "$(tput cols)" '' | tr ' ' '-'
+    printf  '\e['$linecolor'm%*s\e[0m\n' "$(tput cols)" '' | tr ' ' '-'
 }
 
 printDebug() {
@@ -712,4 +712,12 @@ move_down() {
 log() {
     local text="$1"
     echo "[$(date +%D-%T)] $text" >> $log_file
+}
+
+change_setting() {      # changes value of specified setting in $CONFIG_FILE
+    local setting="$1"
+    local value="$2"
+
+    jq --arg setting "$setting" --arg value "$value" '.[$setting] = $value' $CONFIG_FILE > /tmp/config.tmp
+    mv /tmp/config.tmp $CONFIG_FILE
 }
