@@ -241,6 +241,7 @@ then
     then
         echo "Copy/pasting 'config.json' into '~/.config/tui-todolist/'"
         sleep 1
+        chmod 666 config.json
         sudo cp config.json ~/.config/tui-todolist/config.json
         echo " > Done!"
         sleep 1
@@ -255,6 +256,7 @@ then
     then
         echo "Copy/pasting 'bin/tui-todolist' into '/usr/bin/bin/'"
         sleep 1
+        chmod +x bin/tui-todolist
         sudo cp bin/tui-todolist /usr/local/bin/tui-todolist
         echo " > Done!"
         sleep 1
