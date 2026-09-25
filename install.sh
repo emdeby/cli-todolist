@@ -62,11 +62,20 @@ clean_up() {
         echo " > Done!"
     fi
 
-    if [[ -f ~/.config/tui-todolist/config.json ]]
+    if [[ -d ~/.config/tui-todolist/ ]]
     then
-        echo "Executing 'sudo rm ~/.config/tui-todolist/config.json'..."
+        echo "Executing 'sudo rm -r ~/.config/tui-todolist/'.."
         sleep 1
-        sudo rm ~/.config/tui-todolist/config.json
+        sudo rm -r ~/.config/tui-todolist/
+        sleep 1
+        echo " > Done!"
+    fi
+
+    if [[ -d ~/.local/share/tui-todolist/ ]]
+    then
+        echo "Executing 'sudo rm -r ~/.local/share/tui-todolist/'.."
+        sleep 1
+        sudo rm -r ~/.local/share/tui-todolist/
         sleep 1
         echo " > Done!"
     fi
