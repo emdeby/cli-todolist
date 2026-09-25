@@ -113,6 +113,18 @@ then
     echo " > Done!"
     sleep 0.5
 
+    echo "Creating directory '~/.config/tui-todolist'"
+    sleep 0.5
+    sudo mkdir ~/.config/tui-todolist
+    echo " > Done!"
+    sleep 0.5
+
+    echo "Creating directory '~/.local/share/tui-todolist'"
+    sleep 0.5
+    sudo mkdir ~/.local/share/tui-todolist
+    echo " > Done!"
+    sleep 0.5
+
     echo "Copy/pasting 'todolist_main.sh' into'/usr/local/lib/tui-todolist/'"
     sleep 0.5
     sudo cp todolist_main.sh /usr/local/lib/tui-todolist/todolist_main.sh
@@ -151,6 +163,34 @@ then
         echo "Creating directory '/usr/local/lib/tui-todolist'"
         sleep 1
         sudo mkdir /usr/local/lib/tui-todolist
+        echo " > Done!"
+        sleep 1
+    else
+        echo "Aborting..."
+        sleep 1
+        clean_up
+    fi
+
+    read -p "Create directory '~/.config/tui-todolist'? (Y/n) " confirm
+    if [[ $confirm == "Y" ]]
+    then
+        echo "Creating directory '~/.config/tui-todolist'"
+        sleep 1
+        sudo mkdir ~/.config/tui-todolist
+        echo " > Done!"
+        sleep 1
+    else
+        echo "Aborting..."
+        sleep 1
+        clean_up
+    fi
+
+    read -p "Create directory '~/.local/share/tui-todolist'? (Y/n) " confirm
+    if [[ $confirm == "Y" ]]
+    then
+        echo "Creating directory '~/.local/share/tui-todolist'"
+        sleep 1
+        sudo mkdir ~/.local/share/tui-todolist
         echo " > Done!"
         sleep 1
     else
