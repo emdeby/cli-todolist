@@ -9,14 +9,14 @@ fi
 
 # CONSTANTS
 DEPENDENCIES=("figlet" "dialog")
-DISTRO=$(cat /etc/os-release | grep ^NAME | sed 's/NAME="//; s/"$//')
+DISTRO=$(cat /etc/os-release | grep ^NAME | sed 's/NAME="//; s/"$//' | awk '{print $1}')
 SAFETY_MODE=false
 
 # FUNCTIONS
 check_dependency() {        # check if dependencies are installed, if not: install.
     local DEPENDENCY="$1"
 
-    if [[ "$DISTRO" == "Arch Linux" ]]
+    if [[ "$DISTRO" == "Arch" ]]
     then
         local CHECK="pacman -Q"
         local INSTALL="pacman -S"
