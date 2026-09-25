@@ -35,10 +35,10 @@ reorderList() {
     fi
 }
 
-check_dependency() {
+check_dependency() {        # check if dependencies are installed, if not: install.
     local DEPENDENCY="$1"
 
-    if [[ "$DISTRO" == "Arch Linux" ]]
+    if [[ "$DISTRO" == "Arch" ]]
     then
         local CHECK="pacman -Q"
         local INSTALL="pacman -S"
@@ -48,23 +48,21 @@ check_dependency() {
         local INSTALL="apt install"
     fi
 
-    if ! $CHECK $DEPENDENCY
+    if ! $CHECK $DEPENDENCY > /dev/null 2>&1
     then
-        clear
         echo "Dependency '$DEPENDENCY' missing."
         read -s -n 1  -p "Need to install dependency '$DEPENDENCY', press enter to continue..."
         echo
         if sudo $INSTALL $DEPENDENCY
         then
             sleep 1
-            clear
             echo "Dependency '$DEPENDENCY' installed successfully!"
             sleep 2
-            clear
             sleep 0.5
         fi
     fi
 }
+
 
 calcSpaces(){
     twidth=$(tput cols)
