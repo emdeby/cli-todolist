@@ -11,8 +11,8 @@ date=$(date +"%Y-%m-%d")
 bold=$(tput bold)
 normal=$(tput sgr0)
 cursive=$(tput sitm)
-TODO_FILE=~/.local/share/cli-todolist/todolist.txt
-TRASHCAN_FILE=~/.local/share/cli-todolist/todolist_dev/todolist_trashcan.txt
+TODO_FILE=~/.local/share/tui-todolist/todolist.txt
+TRASHCAN_FILE=~/.local/share/tui-todolist/todolist_trashcan.txt
 SHOW_STALLED_FILE=~/.config/tui-todolist/other/show_stalled.txt
 
 # VARIABLES #
