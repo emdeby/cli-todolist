@@ -2,7 +2,7 @@
 sleep 0.1
 
 ## Import functions
-source ~/git/tui-todolist/todolist_functions.sh
+source /usr/local/lib/tui-todolist/todolist_functions.sh
 
 ### DECLARE ###
 
