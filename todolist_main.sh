@@ -78,7 +78,7 @@ keybindingsOrder=("Move up" "Move down" "New task" "Change status/Confirm" "Back
 
 ### PRE-EXECUTION CHECKS ###
 PKG_DEPENDENCIES=("figlet" "dialog")
-DISTRO=$(cat /etc/os-release | grep ^NAME | sed 's/NAME="//; s/"$//')
+DISTRO=$(cat /etc/os-release | grep ^NAME | sed 's/NAME="//; s/"$//' | awk '{print $1}')
 
 for DEPENDENCY in "${PKG_DEPENDENCIES[@]}"
 do
